@@ -1,5 +1,6 @@
 import { ACTION_EVENTS } from "../data/action-events";
 import { ACTION_MESSAGES } from "../data/action-messages";
+import { showLoginError, showRegisterError } from "../helpers/show-errors";
 import { supabase } from "../supabaseClient";
 import { sendVerification } from "../utils/sendVerification";
 
@@ -8,17 +9,22 @@ export const loginUser = async (email, password) => {
     email,
     password,
   });
-  if (error) return { error };
+  if (error) {
+    return {
+      error: {
+        ...error,
+        message: showLoginError(error),
+      },
+    };
+  }
 
   const userId = data.user.id;
 
-  // note: update last login timestamp
   await supabase
     .from("users")
     .update({ last_login_at: new Date().toISOString() })
     .eq("id", userId);
 
-  // note: get current status
   const { data: userData, error: fetchError } = await supabase
     .from("users")
     .select("status")
@@ -48,26 +54,22 @@ export const registerUser = async (email, password, name) => {
       options: { data: { name } },
     });
 
-    const user = data?.user;
-
-    // note: send verification email
-    sendVerification(user.id, user.email).catch(() => {});
-
-    return { success: true, userId: user.id };
-  } catch (error) {
-    
-    // important: PostgreSQL + SupabaseAuth already checks that each email is unique, we also handle this case here
-    const isUnique = error.code === "23505";
-
-    if (isUnique) {
+    if (error) {
       return {
         error: {
-          code: "23505",
-          message: "This email is already in use",
+          ...error,
+          message: showRegisterError(error),
         },
       };
     }
 
+    const user = data?.user;
+    if (user) {
+      sendVerification(user.id, user.email).catch(() => {});
+    }
+
+    return { success: true, userId: user.id };
+  } catch (error) {
     return { error };
   }
 };
@@ -93,6 +95,3 @@ export const getCurrentUserId = async () => {
 
   return data?.user?.id ?? null;
 };
-
-
-
