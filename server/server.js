@@ -8,17 +8,13 @@ import dotenv from "dotenv";
 const isDev = process.env.NODE_ENV !== "production";
 if (isDev) dotenv.config();
 
-// note: general app setup
 const app = express();
 app.use(express.json());
-
-// note: general helpers
 
 const EMAIL_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
-// note: CORS config
 const allowedOrigins = [
   FRONTEND_URL,
   "http://localhost:5173",
@@ -42,7 +38,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-// note: supabase admin client
+
 const hasSupabase =
   !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -58,8 +54,6 @@ const supabaseAdmin =
 const hashToken = (token) => {
   return crypto.createHash("sha256").update(token).digest("hex");
 };
-
-// note: unified nodemailer transporter
 
 const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
 const SMTP_PORT = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 465;
@@ -87,7 +81,6 @@ const transporter = nodemailer.createTransport({
   debug: true,
 });
 
-// note: unifed sending function, create link
 const sendVerificationEmail = async (toEmail, rawToken) => {
   const link = new URL("/verify-email", FRONTEND_URL);
   link.searchParams.set("token", rawToken);
@@ -121,18 +114,9 @@ const sendVerificationEmail = async (toEmail, rawToken) => {
   };
 
   const info = await transporter.sendMail(mailOptions);
-  console.log("Email sent:", info.messageId);
   return info;
 };
 
-// note: ащк еуыешта
-
-app.get("/health-check", (req, res) => {
-  console.log("Health-check route was called!");
-  res.json({ status: "ok" });
-});
-
-// note: create token, save hash in email_verifications
 app.post("/send-verification", async (req, res) => {
   try {
     const { userId, email } = req.body;
@@ -148,7 +132,6 @@ app.post("/send-verification", async (req, res) => {
     const tokenHash = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + EMAIL_TOKEN_TTL_MS).toISOString();
 
-    // note: add user to users table
     // important: default set status 'unverified'
     const { error: upsertErr } = await supabaseAdmin
       .from("users")
@@ -161,7 +144,6 @@ app.post("/send-verification", async (req, res) => {
         .json({ success: false, error: upsertErr.message ?? upsertErr });
     }
 
-    // note: add to email_verifications
     const { error: insertErr } = await supabaseAdmin
       .from("email_verifications")
       .insert([
@@ -177,7 +159,6 @@ app.post("/send-verification", async (req, res) => {
         .json({ success: false, error: insertErr.message ?? insertErr });
     }
 
-    // note: send email
     try {
       await sendVerificationEmail(email, rawToken);
     } catch (mailErr) {
@@ -256,7 +237,6 @@ app.post("/delete-users", async (req, res) => {
       throw selErr;
     }
 
-    // note: delete from auth
     const failed = [];
     const succeeded = [];
     for (const id of ids) {
@@ -272,7 +252,6 @@ app.post("/delete-users", async (req, res) => {
       }
     }
 
-    // note: delete from users
     const { error: tableErr } = await supabaseAdmin
       .from("users")
       .delete()
@@ -293,12 +272,10 @@ app.post("/delete-users", async (req, res) => {
   }
 });
 
-// note: delete all unverified users
 app.post("/delete-unverified", async (req, res) => {
   try {
     const { currentEmail } = req.body;
 
-    // note: find all with status "unverified"
     const { data: users, error: fetchErr } = await supabaseAdmin
       .from("users")
       .select("id, email")
@@ -317,7 +294,6 @@ app.post("/delete-unverified", async (req, res) => {
 
     const ids = users.map((u) => u.id);
 
-    // // note: delete form auth
     const failed = [];
     const succeeded = [];
 
@@ -334,7 +310,6 @@ app.post("/delete-unverified", async (req, res) => {
       }
     }
 
-    // note: delete from users
     const { error: tableErr } = await supabaseAdmin
       .from("users")
       .delete()
@@ -342,7 +317,6 @@ app.post("/delete-unverified", async (req, res) => {
 
     if (tableErr) throw tableErr;
 
-    // note: front nefine the user was deleted or not
     return res.json({
       success: true,
       requested: ids,
@@ -357,12 +331,8 @@ app.post("/delete-unverified", async (req, res) => {
   }
 });
 
-// note: global error handler
 app.use((err, req, res, next) => {
-  console.error("EXPRESS ERROR:", err?.stack || err);
   res.status(500).json({ error: "Internal Server Error" });
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => {});
