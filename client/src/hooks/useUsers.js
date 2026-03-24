@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadUsers } from "../services/users";
-import { handleActionEvent } from "../utils/handleActionEvent";
-import { runUserAction } from "../utils/runUserActions";
-import { checkStatusAndRedirect } from "../utils/checkStatusAndRedirect";
-import { checkUserStatus } from "../utils/checkUserStatus";
+import { handleActionEvent } from "../utils/handle-action-event";
+import { runUserAction } from "../utils/run-user-actions";
+import { checkStatusAndRedirect } from "../utils/check-status-and-redirect";
+import { checkUserStatus } from "../utils/check-user-status";
 
 const useUsers = (delay = 2000) => {
   const [users, setUsers] = useState([]);
@@ -12,7 +12,6 @@ const useUsers = (delay = 2000) => {
   const [alert, setAlert] = useState(null);
   const navigate = useNavigate();
 
-  // note: reload user list
   const reload = useCallback(async () => {
     try {
       const data = await loadUsers();
@@ -22,19 +21,16 @@ const useUsers = (delay = 2000) => {
     }
   }, [setAlert]);
 
-  // note: initial load
   useEffect(() => {
     reload();
   }, [reload]);
 
-  // note: auto-hide alert after delay
   useEffect(() => {
     if (!alert) return;
     const id = setTimeout(() => setAlert(null), delay);
     return () => clearTimeout(id);
   }, [alert]);
 
-  // note: handle toolbar actions like block/unblock/delete
   const handleToolbarAction = async (actionId) => {
     let event = null;
 
@@ -46,7 +42,6 @@ const useUsers = (delay = 2000) => {
     }
 
     try {
-      // note: runUserAction handles the actual action and returns event
       event = await runUserAction({
         selectedUsers,
         reload,
@@ -57,11 +52,9 @@ const useUsers = (delay = 2000) => {
       setAlert("Error");
     }
 
-    // note: clear selection after action
     setSelectedUsers([]);
 
     if (event) {
-      // note: show alert or redirect if needed
       await handleActionEvent(event, setAlert);
     }
   };

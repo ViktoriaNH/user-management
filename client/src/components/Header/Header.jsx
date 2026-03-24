@@ -1,14 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../Button/Button";
-import { redirectToLogin } from "../../helpers/redirectToLogin";
-
+import { redirectToLogin } from "../../helpers/redirect-to-login";
 
 const Header = () => {
   const navigate = useNavigate();
 
- const handleLogout = async () => {
-  await redirectToLogin(navigate, 0);
-};
+  const handleLogout = async () => {
+    await redirectToLogin(navigate, 0);
+  };
 
   return (
     <header className="bg-secondary-subtle d-flex justify-content-between align-items-center px-5 py-3 mb-4 w-100">

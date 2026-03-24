@@ -2,7 +2,7 @@ import { ACTION_EVENTS } from "../data/action-events";
 import { ACTION_MESSAGES } from "../data/action-messages";
 import { showLoginError, showRegisterError } from "../helpers/show-errors";
 import { supabase } from "../supabaseClient";
-import { sendVerification } from "../utils/sendVerification";
+import { sendVerification } from "../utils/send-verification";
 
 export const loginUser = async (email, password) => {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -74,14 +74,12 @@ export const registerUser = async (email, password, name) => {
   }
 };
 
-// note: return user's id and catch "no-user"
 export const getCurrentUserId = async () => {
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
     const msg = (error.message || "").toLowerCase();
 
-    // КРИТИЧНО: пользователь удалён, но JWT ещё есть
     if (
       msg.includes("user from sub claim") ||
       msg.includes("not exist") ||

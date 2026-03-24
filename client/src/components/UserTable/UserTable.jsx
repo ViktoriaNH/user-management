@@ -1,4 +1,4 @@
-import { sortUsersByCreatedAt } from "../../helpers/sortUsersByCreatedAt";
+import { sortUsersByCreatedAt } from "../../helpers/sort-users-by-created-at";
 import TableBody from "../TableBody";
 import TableHeader from "../TableHeader/TableHeader";
 

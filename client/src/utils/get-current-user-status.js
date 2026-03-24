@@ -33,7 +33,6 @@ export const getCurrentUserStatus = async () => {
     .eq("id", currentUserId)
     .single();
 
-  // note: process the errors from supabase
   if (error) {
     const code = error?.code ?? error?.status ?? error?.statusCode ?? null;
     if (code === "user_not_found" || code === 403 || code === 401) {

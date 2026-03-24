@@ -1,11 +1,10 @@
-import { checkUserStatus } from "./checkUserStatus";
-import { userActions } from "./userActions";
+import { checkUserStatus } from "./check-user-status";
+import { userActions } from "./user-actions";
 
 // note: wrapper for user actions (block, delete, etc.)
 export const runUserAction =
   (context) =>
   async (actionId, selectedUsers = []) => {
-    // note: check the current user blocked or not, then run the action
     const check = await checkUserStatus();
 
     if (!check.ok) {
@@ -13,7 +12,6 @@ export const runUserAction =
       return undefined;
     }
 
-    // note: return the action result or undefined if blocked/error/not found
     const action = userActions[actionId];
     if (!action) {
       return undefined;

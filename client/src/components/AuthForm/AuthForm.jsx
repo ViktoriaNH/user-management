@@ -4,8 +4,8 @@ import Input from "../Input/Input";
 import Button from "../Button/Button";
 import Alert from "../Alert";
 import { useNavigate } from "react-router-dom";
-import { resetFormText } from "../../helpers/resetFormText";
-import { resetRedirectFlag } from "../../utils/checkStatusAndRedirect";
+import { resetFormText } from "../../helpers/reset-form-text";
+import { resetRedirectFlag } from "../../utils/check-status-and-redirect";
 
 const AuthForm = ({ mode }) => {
   const config = AUTH_MODE_CONFIG[mode];

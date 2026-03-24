@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { TOOLBAR_BUTTONS } from "./../../data/toolbar-buttons";
-import initTooltips from "../../helpers/initTooltips";
+import initTooltips from "../../helpers/init-tooltips";
 
 const Toolbar = (props) => {
   const { onAction } = props;

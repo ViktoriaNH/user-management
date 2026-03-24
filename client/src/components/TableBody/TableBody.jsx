@@ -1,5 +1,5 @@
 import COLUMNS from "../../data/columns";
-import { FormatDate } from "../../helpers/formatDate";
+import { FormatDate } from "../../helpers/format-date";
 
 const TableBody = (props) => {
   const { users = [], selectedUsers = [], setSelectedUsers } = props;

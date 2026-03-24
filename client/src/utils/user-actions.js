@@ -7,48 +7,34 @@ import {
   deleteUsers,
   deleteUnverifiedUsers,
 } from "../services/users";
-import { isSelfIncluded } from "../helpers/isSelfIncluded";
+import { isSelfIncluded } from "../helpers/is-self-included";
 
 export const userActions = {
   block: async ({ selectedUsers, reload }) => {
-    // note: get current user id for self-check
     const currentUserId = await getCurrentUserId();
 
-    // note: block selected users
     await blockUsers(selectedUsers);
-
-    // note: update data after action
     await reload();
 
-    // note: check if current user was among blocked users
     const isSelf = isSelfIncluded(currentUserId, selectedUsers);
-
-    // note: return event if self blocked
     if (isSelf) {
       return ACTION_EVENTS.SELF_BLOCKED;
     }
 
-    // note: return general blocked event
     return ACTION_EVENTS.USERS_BLOCKED;
   },
 
   unblock: async ({ selectedUsers, reload }) => {
-    // note: unblock selected users
     await unblockUsers(selectedUsers);
-
-    // note: update data after action
     await reload();
 
-    // note: always return general unblock event
     return ACTION_EVENTS.USERS_UNBLOCKED;
   },
 
   delete: async ({ selectedUsers, reload }) => {
-    // note: get data current user
     const { data: authUser } = await supabase.auth.getUser();
     const currentUserId = authUser?.user?.id;
 
-    // note: check we delete self or another
     const isSelf = selectedUsers.includes(currentUserId);
 
     let result;
@@ -64,7 +50,6 @@ export const userActions = {
   },
 
   "delete-unverified": async ({ reload }) => {
-    // note: get data current user
     const { data: authUser } = await supabase.auth.getUser();
     const currentUserId = authUser?.user?.id;
 
@@ -75,7 +60,6 @@ export const userActions = {
       throw err;
     }
 
-    //  note: check we delete self or not
     const isSelf = result?.requested?.includes(currentUserId);
 
     await reload();

@@ -11,7 +11,6 @@ export const FormatDate = (value) => {
     month: "short",
     year: "numeric",
 
-    // note: we use format AM/PM because this is standard for en-US locale
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,

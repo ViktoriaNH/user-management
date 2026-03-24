@@ -19,14 +19,11 @@ export const loadUsers = async () => {
   return data || [];
 };
 
-// note: do the select users as blocked
 export const blockUsers = async (ids) => {
   const { data: users } = await supabase
     .from("users")
     .select("id, status")
     .in("id", ids);
-
-  // note: prepare updates to block users, savу previous status to correct restore
 
   const updates = (users || []).map((u) => ({
     id: u.id,
@@ -39,7 +36,6 @@ export const blockUsers = async (ids) => {
   }
 };
 
-// note: do the select users as unblocked
 export const unblockUsers = async (ids) => {
   const { data: users } = await supabase
     .from("users")
@@ -61,7 +57,6 @@ export const unblockUsers = async (ids) => {
 const BACKEND =
   import.meta.env.VITE_BACKEND_URL;
 
-//note: delete selected users
 export const deleteUsers = async (ids, currentEmail) => {
   if (!ids || ids.length === 0) {
     return { success: true, requested: [] };
@@ -88,7 +83,6 @@ export const deleteUsers = async (ids, currentEmail) => {
   return payload;
 };
 
-//note: delete all unverified users
 export const deleteUnverifiedUsers = async () => {
   const { data: authUser, error: userErr } = await supabase.auth.getUser();
   if (userErr) {

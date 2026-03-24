@@ -1,9 +1,7 @@
 import { ACTION_EVENTS } from "../data/action-events";
 import { ACTION_MESSAGES } from "../data/action-messages";
-import { redirectToLogin } from "../helpers/redirectToLogin";
-import { supabase } from "../supabaseClient";
-import { checkUserStatus } from "./checkUserStatus";
-
+import { redirectToLogin } from "../helpers/redirect-to-login";
+import { checkUserStatus } from "./check-user-status";
 
 let redirectCalled = false;
 
@@ -14,7 +12,7 @@ export const resetRedirectFlag = () => {
 export const checkStatusAndRedirect = async (
   navigate,
   setAlert = () => {},
-  delay = 2000
+  delay = 2000,
 ) => {
   const check = await checkUserStatus();
 
@@ -41,4 +39,3 @@ export const checkStatusAndRedirect = async (
     return;
   }
 };
-

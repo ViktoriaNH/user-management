@@ -1,4 +1,4 @@
-import { getCurrentUserStatus } from "./getCurrentUserStatus";
+import { getCurrentUserStatus } from "./get-current-user-status";
 
 export const checkUserStatus = async () => {
   const { status, error } = await getCurrentUserStatus();
